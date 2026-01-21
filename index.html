@@ -49,38 +49,57 @@
 
   <div class="feed" id="feed"></div>
 
-  <script>
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbwnKCGF9XAjkUBjjy9UfSL7M1cKT7PJijeV98Sh2XMUBjPmxwwmKkIZExxL3L_MDdA8dw/exec";
+ <script>
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycbwnKCGF9XAjkUBjjy9UfSL7M1cKT7PJijeV98Sh2XMUBjPmxwwmKkIZExxL3L_MDdA8dw/exec";
 
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(items => {
-        const feed = document.getElementById("feed");
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(items => {
+      const feed = document.getElementById("feed");
 
-        items
-          .sort((a, b) =>
-            new Date(b.timestamp) - new Date(a.timestamp)
-          )
-          .forEach(item => {
-            const wrapper = document.createElement("div");
-            wrapper.className = "item";
+      // 時間順に並び替え
+      items.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
 
-            const img = document.createElement("img");
-            img.src = item.image_url;
-            img.loading = "lazy";
-
-            const time = document.createElement("div");
-            time.className = "timestamp";
-            time.textContent =
-              new Date(item.timestamp)
-                .toLocaleString("ja-JP");
-
-            wrapper.append(img, time);
-            feed.appendChild(wrapper);
-          });
+      // 1セット目
+      items.forEach(item => {
+        feed.appendChild(createItem(item));
       });
-  </script>
+
+      // 2セット目（コピー）
+      items.forEach(item => {
+        feed.appendChild(createItem(item));
+      });
+
+      const halfHeight = feed.scrollHeight / 2;
+
+      window.addEventListener("scroll", () => {
+        if (window.scrollY >= halfHeight) {
+          // 見えない位置調整
+          window.scrollTo(0, window.scrollY - halfHeight);
+        }
+      });
+    });
+
+  function createItem(item) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "item";
+
+    const img = document.createElement("img");
+    img.src = item.image_url;
+    img.loading = "lazy";
+
+    const time = document.createElement("div");
+    time.className = "timestamp";
+    time.textContent =
+      new Date(item.timestamp).toLocaleString("ja-JP");
+
+    wrapper.append(img, time);
+    return wrapper;
+  }
+</script>
 
 </body>
 </html>
