@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gallery</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .time {
+      padding: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid" id="gallery"></div>
+
+  <script>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbwnKCGF9XAjkUBjjy9UfSL7M1cKT7PJijeV98Sh2XMUBjPmxwwmKkIZExxL3L_MDdA8dw/exec";
+
+    fetch(API_URL)
+      .then(r => r.json())
+      .then(items => {
+        const gallery = document.getElementById("gallery");
+
+        items
+          .sort((a, b) =>
+            new Date(b.timestamp) - new Date(a.timestamp)
+          )
+          .forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const img = document.createElement("img");
+            img.src = item.image_url;
+            img.loading = "lazy";
+
+            const time = document.createElement("div");
+            time.className = "time";
+            time.textContent =
+              new Date(item.timestamp)
+                .toLocaleString("ja-JP");
+
+            card.append(img, time);
+            gallery.appendChild(card);
+          });
+      });
+  </script>
+
+</body>
+</html>
